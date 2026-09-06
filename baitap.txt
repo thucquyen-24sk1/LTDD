@@ -1,0 +1,225 @@
+import java.util.Scanner
+
+data class Student (
+	val studentId: String,
+    val fullName: String,
+    val age: Int,
+    val major: String,
+    val gpa: Double
+	)
+{
+    override fun toString(): String
+    { return "ID: %-15s | Tên: %-20s | Tuổi: %-3d | Ngành học: %-15s | GPA: %.2f".format(
+    		studentId, fullName, age, major, gpa) }
+}
+
+class StudentManager {
+    private val studentList = mutableListOf<Student>()
+    init {
+        studentList.add(Student("2415141122115", "Nguyễn Thị Thục Quyên", 20 , "SPCN",7.94))  
+    	studentList.add(Student("2415053122111", "Trần Văn Anh", 20, "CNTT", 4.5))
+        studentList.add(Student("2315141122115", "Trà Như Quỳnh", 21, "SPCN", 8.5))
+        studentList.add(Student("2215141122102", "Phạm Minh Châu", 22, "SPCN", 8.7))
+        studentList.add(Student("2315053122101", "Võ Tấn Phát", 21, "CNTT", 8.2))
+    }
+    fun addStudent(scanner: Scanner) {
+        print("Nhập Student ID: ")
+        val id = scanner.nextLine().trim()
+        print("Nhập Fullname: ")
+        val name = scanner.nextLine().trim()
+        print("Nhập Age:")
+        val age = scanner.nextLine().toIntOrNull() ?: 0
+        print("Nhập Major: ")
+        val major = scanner.nextLine().trim()
+        print("Nhập GPA: ")
+        val gpa = scanner.nextLine().toDoubleOrNull() ?: 0.0
+        
+        studentList.add(Student(id, name, age, major, gpa))
+        println("Đã thêm sinh viên thành công! ")
+    }
+
+fun displayAll() {
+    if (studentList.isEmpty()) {
+        println("Danh sách sinh viên trống.")
+        return
+    }
+    println("------DANH SÁCH SINH VIÊN------")
+    studentList.forEach {
+        println(it)
+    }
+}
+
+fun searchStudent(scanner: Scanner) {
+    print("Nhập ID hoặc tên sinh viên cần tìm: ")
+    val keyword = scanner.nextLine().trim().lowercase()
+    val results = studentList.filter {
+        it.studentId.lowercase().contains(keyword) || it.fullName.lowercase().contains(keyword)
+    }
+    printResults(results)
+}
+
+fun calculateAverageGpa() {
+    if (studentList.isEmpty()) {
+        println("Danh sách trống.")
+        return
+    }
+    val avg = studentList.map { it.gpa }.average()
+    println("GPA trung bình của tất cả sinh viên: %.2f".format(avg))
+}
+
+fun findHighestGpa() {
+    val maxStudent = studentList.maxByOrNull { it.gpa }
+    if (maxStudent != null) {
+        println("Sinh viên có GPA cao nhất: ")
+        println(maxStudent)
+    } else 
+    	{ println("Danh sách trống.") }
+}
+
+fun removeStudent(scanner: Scanner) {
+    print("Nhập Student ID cần xoá: ")
+    val id = scanner.nextLine().trim()
+    val removed = studentList.removeIf { it.studentId.equalsIgnoreCase(id) }
+    if (removed) {
+        println("Đã xoá sinh viên có ID: $id")
+    } else { println("Không tìm thấy sinh viên có ID: $id")}
+}
+
+fun countHighGpa() {
+    val count = studentList.count { it.gpa >= 8.0 }
+    println("Số sinh viên có GPA >= 8.0 là: $count")
+}
+
+fun countLowGpa() {
+    val count = studentList.count { it.gpa < 5.0 }
+    println("Số sinh viên coa GPA < 5.0 là: $count")
+}
+
+fun avgGpaByMajor(scanner: Scanner) {
+    print("Nhập ngành cần tính GPA trung bình: ")
+    val majorInput = scanner.nextLine().trim()
+    val filtered = studentList.filter { it.major.equalsIgnoreCase(majorInput)}
+    if (filtered.isNotEmpty()) {
+        val avg = filtered.map { it.gpa }.average()
+        println("GPA trung bình ngành $majorInput: %.2f".format(avg))
+    } else { println("Không tìm thấy sinh viên thuộc ngành $majorInput.") }
+}
+ 
+fun findOldestStudent() {
+    val oldest = studentList.maxByOrNull { it.age }
+    if (oldest != null ) {
+        println("Sinh viên lớn tuổi nhất: ")
+        println(oldest)
+    } else { println("Danh sách trống.") }
+}
+
+fun findGpaInRange() {
+    val results = studentList.filter { it.gpa in 7.0 .. 8.5}
+    println("Sinh viên có GPA từ 7.0 đến 8.5 là: ")
+    printResults(results)
+}
+
+fun findByMajor(scanner: Scanner) {
+    print("Nhập ngành cần tìm: ")
+    val majorInput = scanner.nextLine().trim()
+    val results = studentList.filter { it.major.equalsIgnoreCase(majorInput)}
+    println("Các sinh viên thuộc ngành $majorInput : ")
+	printResults(results)
+}
+
+fun findByPartialName(scanner: Scanner) {
+    print("Nhập từ khoá tên cần tìm: ")
+    val keyword = scanner.nextLine().trim().lowercase()
+    val results = studentList.filter { it.fullName.lowercase().contains(keyword)}
+    println("Kết quả tìm kiếm theo tên: ")
+    printResults(results)
+}
+
+fun sortByGpaDescending() {
+    val sortedList = studentList.sortedByDescending { it.gpa }
+    println("Danh sách sắp xếp theo GPA giảm dần:")
+    printResults(sortedList) 
+}
+
+fun top3Gpa() {
+    val top3 = studentList.sortedByDescending { it.gpa }.take(3)
+    println("Top 3 sinh viên có GPA cao nhất:")
+    printResults(top3)
+}
+
+fun sortByAge() {
+    val sortedList = studentList.sortedBy { it.age }
+    println("Danh sách sắp xếp theo tuổi (tăng dần): ")
+    printResults(sortedList)
+}
+
+fun sortByName() {
+    val sortedList = studentList.sortedBy { it.fullName }
+    println("Danh sách sắp xếp theo tên (A -Z): ")
+    printResults(sortedList)
+}
+
+private fun printResults(list: List < Student >) {
+    if (list.isEmpty()) {
+        println("Không tìm thấy kết quả phù hợp.")
+    } else {
+        list.forEach{println(it)}
+    }
+}
+}
+ fun String.equalsIgnoreCase(other: String): Boolean = this.equals(other, ignoreCase = true)
+
+fun main() {
+    val scanner = Scanner(System.`in`)
+    val manager = StudentManager()
+    
+    while(true) {
+    println("================== STUDENT MANAGER =================")
+    println("1. Add student.")
+    println("2. Display all students.")
+    println("3. Search student.")
+    println("4. Calculate average GPA.")
+    println("5. Find student with highest GPA.")
+    println("6. Remove student.")
+    println("0. Exit")
+    println("------------------------------------------------------")
+    println("7. Đếm số sinh viên GPA >= 8.0.")
+    println("8. Đếm số sinh viên GPA < 5.0.")
+    println("9. Tính GPA trung bình của sinh viên ngành được giao.")
+    println("10. Tìm sinh viên lớn tuổi nhất.")
+    println("11. Tìm sinh viên có GPA nằm trong khoảng 7.0 -> 8.5.")
+    println("12. Tìm sinh viên theo ngành.")
+    println("13. Tìm sinh viên theo một phần tên.")
+    println("14. Sắp xếp sinh viên theo GPA giảm dần.")
+    println("15. Hiển thị 3 sinh vỉên có GPA cao nhất.")
+    println("16. Sắp xếp sinh viên theo tuổi.")
+    println("17. Sắp xếp sinh viên theo tên.")
+    println("Chọn: ")
+
+        val choice = scanner.nextLine().trim()
+        when(choice){
+        "1" -> manager.addStudent(scanner)
+        "2" -> manager.displayAll()
+        "3" -> manager.searchStudent(scanner)
+        "4" -> manager.calculateAverageGpa()
+        "5" -> manager.findHighestGpa()
+        "6" -> manager.removeStudent(scanner)
+        "7" -> manager.countHighGpa()
+        "8" -> manager.countLowGpa()
+        "9" -> manager.avgGpaByMajor(scanner)
+        "10"-> manager.findOldestStudent()
+        "11"-> manager.findGpaInRange()
+        "12"-> manager.findByMajor(scanner)
+        "13"-> manager.findByPartialName(scanner)
+        "14"-> manager.sortByGpaDescending()
+        "15"-> manager.top3Gpa()
+        "16"-> manager.sortByAge()
+        "17"-> manager.sortByName()
+        "0" -> {
+          			println("Đã thoát chương trình.")
+                    break 
+        }
+     else -> println("Lựa chọn không hợp lệ, vui lòng chọn lại! ")
+    	} 
+    }
+}
